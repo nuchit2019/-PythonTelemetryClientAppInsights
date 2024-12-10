@@ -1,218 +1,110 @@
+Here’s a summarized README file for your program:
 
 ---
 
-# **Azure Application Insights Logging Example**
+# Python Console Application with Application Insights
 
-This project demonstrates how to log messages to **Azure Application Insights** and the console in a Python application. The setup includes logging for various process stages like start, success, warnings, and exceptions.
+This Python application demonstrates how to log process flows and telemetry data to Application Insights. It uses the Application Insights SDK and a helper class `TelemetryHelper` to streamline logging. The program tracks different stages of a process (`START`, `WARNING`, `SUCCESS`, `EXCEPTION`) and sends logs and telemetry data to Azure Application Insights.
 
----
+## Features
 
-## **Project Structure**
-
-```
-my_project/
-│
-├── app.py                   # Main application flow
-├── app_insights_config.py   # Azure Application Insights configuration
-├── app_insights_helper.py   # Log helper class for centralized logging
-└── app_logging_constants.py # Log message templates
-```
+- Logs events to Application Insights.
+- Supports structured logging with custom context.
+- Provides severity-level mapping for log messages.
+- Demonstrates logging for **Start**, **Warning**, **Success**, and **Exception** stages.
 
 ---
 
-## **Setup Instructions**
+## Project Structure
 
-### **1. Prerequisites**
-- Python 3.7 or higher installed
-- Azure Application Insights account with an Instrumentation Key
-
----
-
-### **2. Install Dependencies**
-
-Run the following commands to install the required libraries:
-
-```bash
-pip install python-dotenv
-pip install opencensus-ext-azure
-pip install opencensus-ext-logging 
-pip install applicationinsights
-
-
-```
+- **`.env`**: Stores the Application Insights Instrumentation Key.
+- **`telemetry_helper.py`**: Contains helper classes for logging and telemetry integration.
+- **`app.py`**: Main application logic, including the `process_flow` function that simulates a sample process.
 
 ---
 
-### **3. Configuration**
+## Prerequisites
 
-Update the `app_insights_config.py` file with your **Instrumentation Key**:
-
-```python
-# app_insights_config.py
-INSTRUMENTATION_KEY = 'your-application-insights-instrumentation-key'
-```
+1. **Python 3.7 or later**.
+2. **Azure Application Insights**:
+   - Create an Application Insights resource in Azure.
+   - Copy the Instrumentation Key.
 
 ---
 
-### **4. Project Files**
+## Setup
 
-#### **app_logging_constants.py**
-Contains templates for log messages.
+1. Clone the repository:
 
-```python
-APPLICATION_NAME = "PythonConsoleApp"
+   ```bash
+   git clone https://github.com/your-repository.git
+   cd your-repository
+   ```
 
-START_PROCESS = f"{APPLICATION_NAME} Start Process: {{}}"
-WARNING_PROCESS = f"{APPLICATION_NAME} Warning Process: {{}}"
-SUCCESS_PROCESS = f"{APPLICATION_NAME} Success Process: {{}}"
-EXCEPTION_PROCESS = f"{APPLICATION_NAME} Exception Process: {{}}" 
-```
+2. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Create a `.env` file in the project root and add your Application Insights Instrumentation Key:
+
+   ```env
+   APPINSIGHTS_INSTRUMENTATION_KEY=your-application-insights-instrumentation-key
+   ```
+
+4. Verify `requirements.txt` contains:
+
+   ```text
+   python-dotenv
+   applicationinsights
+   ```
 
 ---
 
-#### **app_insights_helper.py**
-Provides centralized logging to both console and Azure Application Insights.
+## Running the Program
 
-```python
-import logging
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.trace_exporter import AzureExporter
-from opencensus.trace.tracer import Tracer
-from opencensus.trace.execution_context import set_opencensus_tracer
-from opencensus.trace.samplers import ProbabilitySampler
-from app_logging_constants import START_PROCESS, SUCCESS_PROCESS, WARNING_PROCESS, EXCEPTION_PROCESS
-from app_insights_config import INSTRUMENTATION_KEY
+1. Run the application using the command:
 
+   ```bash
+   python app.py
+   ```
 
-class AppInsightsLogHelper:
-    """Helper for logging to console and Azure Application Insights."""
+2. The program logs the following stages to the console and Application Insights:
+   - Start Process
+   - Warning Process
+   - Success Process
+   - Exception Process (simulated)
 
-    def __init__(self):
-        # Set up logger
-        self.logger = logging.getLogger("AzureLogger")
-        self.logger.setLevel(logging.INFO)
-        azure_handler = AzureLogHandler(connection_string=f"InstrumentationKey={INSTRUMENTATION_KEY}")
-        self.logger.addHandler(azure_handler)
+---
 
-        # Set up tracer
-        self.tracer = Tracer(
-            exporter=AzureExporter(connection_string=f"InstrumentationKey={INSTRUMENTATION_KEY}"),
-            sampler=ProbabilitySampler(1.0)
-        )
-        set_opencensus_tracer(self.tracer)
+## Example Output
 
-    def log_start_process(self, log_template, process_name):
-        """Logs the start of a process."""
-        message = log_template.format(process_name)
-        self.logger.info(message)
-        with self.tracer.span(name=f"Start {process_name}"):
-            pass
+Console logs:
 
-    def log_success_process(self, log_template, process_name):
-        """Logs the successful completion of a process."""
-        message = log_template.format(process_name)
-        self.logger.info(message)
-        with self.tracer.span(name=f"Success {process_name}"):
-            pass
-
-    def log_warning_process(self, log_template, process_name):
-        """Logs a warning during a process."""
-        message = log_template.format(process_name)
-        self.logger.warning(message)
-        with self.tracer.span(name=f"Warning {process_name}"):
-            pass
-
-    def log_exception_process(self, log_template, process_name, exception):
-        """Logs an exception that occurs during a process."""
-        message = log_template.format(process_name)
-        self.logger.error(message, exc_info=True)
-        with self.tracer.span(name=f"Exception {process_name}"):
-            self.tracer.add_attribute("exception.message", str(exception))
-            self.tracer.add_attribute("exception.stack_trace", str(exception))
+```plaintext
+Start Sample Process Process
+Warning Sample Process Process
+Success Sample Process Process
+********** 0 Exception in Sample Process Process
 ```
 
----
-
-#### **app.py**
-Main application flow with logging examples.
-
-```python
-from app_insights_helper import AppInsightsLogHelper
-from app_logging_constants import START_PROCESS, SUCCESS_PROCESS, WARNING_PROCESS, EXCEPTION_PROCESS
-
-
-def process_flow():
-    log_helper = AppInsightsLogHelper()
-    process_name = "HOME"
-
-    try:
-        # Log Start Process
-        log_helper.log_start_process(START_PROCESS, process_name)
-        print(f"Start {process_name} Process")
-        
-        # Log Warning Process
-        log_helper.log_start_process(WARNING_PROCESS, process_name)
-        print(f"Warning {process_name} Process")
-
-        # Log Success Process
-        log_helper.log_success_process(SUCCESS_PROCESS, process_name)
-        print(f"Success {process_name} Process")
-  
-    except Exception as e:
-        # Log Exception Process
-        log_helper.log_exception_process(EXCEPTION_PROCESS, process_name, e)
-        print(f"Exception in {process_name} Process")
-        raise
-
-
-if __name__ == "__main__":
-    process_flow()
-```
+Azure Application Insights logs will reflect the same events with additional telemetry details.
 
 ---
 
-## **Running the Application**
+## Troubleshooting
 
-Run the application with:
-
-```bash
-python app.py
-```
+- **Missing Instrumentation Key**: Ensure the `.env` file contains a valid Application Insights Instrumentation Key.
+- **Telemetry Errors**: Check internet connectivity and ensure the Azure resource is active.
 
 ---
 
-## **Features**
+## Author
 
-- Logs key process stages (`Start`, `Success`, `Warning`, `Exception`) to both **Azure Application Insights** and the console.
-- Centralized helper class for consistent logging.
-- Uses **OpenCensus** for distributed tracing.
-
----
-
-## **Customization**
-
-1. Update `app_logging_constants.py` to add or modify log templates.
-2. Use the `AppInsightsLogHelper` class in other modules for consistent logging.
+Your Name  
+[Your Contact Information]  
 
 ---
 
-## **Example Output**
-
-**Console Output:**
-
-```text
-Start HOME Process
-Warning HOME Process
-Success HOME Process
-```
-
-**Azure Application Insights:**
-
-- Logs appear under **Traces** and **Exceptions** in your Application Insights resource.
-
----
-
-## **Dependencies**
-
-- `opencensus-ext-azure`
-- `opencensus-ext-logging`
+This README file serves as a guide for setting up, running, and understanding the program. Add more sections as needed for advanced use cases or future features.
