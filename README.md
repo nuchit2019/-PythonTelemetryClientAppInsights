@@ -87,6 +87,9 @@ Success Sample Process Process
 
 Azure Application Insights logs will reflect the same events with additional telemetry details.
 
+![image](https://github.com/user-attachments/assets/ccb1a031-3b89-4a92-a5a9-359e6f036b91)
+
+
 ---
 
 ## Troubleshooting
