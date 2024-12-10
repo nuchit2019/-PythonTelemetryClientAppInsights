@@ -44,7 +44,10 @@ This Python application demonstrates how to log process flows and telemetry data
 2. Install dependencies:
 
    ```bash
-   pip install -r requirements.txt
+   pip install python-dotenv
+   pip install opencensus-ext-azure
+   pip install opencensus-ext-logging 
+   pip install applicationinsights
    ```
 
 3. Create a `.env` file in the project root and add your Application Insights Instrumentation Key:
