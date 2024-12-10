@@ -56,13 +56,6 @@ This Python application demonstrates how to log process flows and telemetry data
    APPINSIGHTS_INSTRUMENTATION_KEY=your-application-insights-instrumentation-key
    ```
 
-4. Verify `requirements.txt` contains:
-
-   ```text
-   python-dotenv
-   applicationinsights
-   ```
-
 ---
 
 ## Running the Program
