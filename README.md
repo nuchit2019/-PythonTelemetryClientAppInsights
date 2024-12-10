@@ -105,8 +105,11 @@ Azure Application Insights logs will reflect the same events with additional tel
 
 ## Author
 
-Your Name  
-[Your Contact Information]  
+For questions or support, please contact:  
+**Nuchit Atjanawat**  
+**Email**: nuchit@outlook.com  
+**GitHub**: [nuchit2019](https://github.com/nuchit2019)
+
 
 ---
 
