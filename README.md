@@ -37,7 +37,7 @@ This Python application demonstrates how to log process flows and telemetry data
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-repository.git
+   git clone [https://github.com/nuchit2019/PythonTelemetryClientAppInsights.git](https://github.com/nuchit2019/PythonTelemetryClientAppInsights.git)
    cd your-repository
    ```
 
